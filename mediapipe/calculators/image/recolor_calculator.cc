@@ -217,6 +217,13 @@ REGISTER_CALCULATOR(RecolorCalculator);
 
   cv::Mat input_mat = formats::MatView(&input_img);
   cv::Mat mask_mat = formats::MatView(&mask_img);
+ 
+  cv::Mat dark_lut
+  cv::Mat light_lut
+   
+  cv::cvtColor(cv::imread(file::JoinPath("./","mediapipe/calculators/image/testdata/dark_lut.png")),dark_lut,cv::COLOR_BGR2RGB);
+  cv::cvtColor(cv::imread(file::JoinPath("./","mediapipe/calculators/image/testdata/whilte_lut.png")),white_lut,cv::COLOR_BGR2RGB);
+ 
 
   RET_CHECK(input_mat.channels() == 3);  // RGB only.
 
