@@ -257,11 +257,29 @@ REGISTER_CALCULATOR(RecolorCalculator);
     for (int j = 0; j < output_mat.cols; ++j) {
       float weight = mask_full.at<uchar>(i, j) * (1.0 / 255.0);
       cv::Vec3f color1 = input_mat.at<cv::Vec3b>(i, j);
-      cv::Vec3f color2 = {color_[0], color_[1], color_[2]};
-
+       
+      //Calculating indices
+      float input_red  = color1[0];
+      float input_green = color1[1];  
+      float input_blue  = color1[2];
+      int R            = input_red/4;
+      int G            = input_green/4;
+      int B            = input_blue/4;
+       
+      int x_coordinate = (B%8)*64 + R;
+      int y_coordinate = (B/8)*64 + G;
+      //Accessing from LUTs
+      cv::Vec3f color_dark  = dark_lut.at<cv::Vec3b>(x_coordinate,y_coordinate);
+      cv::Vec3f color_light = light_lut.at<cv::Vec3b>(x_coordinate,y_coordinate);
       float luminance =
           (color1[0] * 0.299 + color1[1] * 0.587 + color1[2] * 0.114) / 255;
-      float mix_value = weight * luminance;
+      
+      for(int i=0;i<3;i++)
+      { 
+           color_[i]        = (color_light[i] - color_dark[i])*luminance + color_dark[i];
+      }
+      cv::Vec3f color2 = {color_[0], color_[1], color_[2]};   
+      float mix_value = weight;
 
       cv::Vec3b mix_color = color1 * (1.0 - mix_value) + color2 * mix_value;
       output_mat.at<cv::Vec3b>(i, j) = mix_color;
